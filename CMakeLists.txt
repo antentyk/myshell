@@ -1,0 +1,110 @@
+cmake_minimum_required(VERSION 3.5)
+project(myshell)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+add_executable(mycat mycat/main.cpp)
+add_executable(
+    myls
+    myls/Display/display.cpp
+    myls/Display/Display.h
+    myls/Display/displayer.cpp
+    myls/Display/get_files.cpp
+    myls/Display/out_directory.cpp
+    myls/Display/out_single_directory.cpp
+    myls/Display/out_single_file.cpp
+    myls/Display/run.cpp
+    myls/File/file_instance.cpp
+    myls/File/File.h
+    myls/File/files_sorter.cpp
+    myls/General/general.cpp
+    myls/General/General.h
+    myls/General/get_date_representation.cpp
+    myls/Options/options.cpp
+    myls/Options/Options.h
+    myls/Parse/basic_parser.cpp
+    myls/Parse/options_parser.cpp
+    myls/Parse/parse.cpp
+    myls/Parse/Parse.h
+    myls/Settings/settings_holder.cpp
+    myls/Settings/Settings.h
+    myls/SortingOptions/sorting_options.cpp
+    myls/SortingOptions/SortingOptions.h
+    myls/main.cpp
+)
+add_executable(
+    mymkdir
+    mymkdir/Action/Action.h
+    mymkdir/Action/Action.cpp
+    mymkdir/Parser/Parser.h
+    mymkdir/Parser/Parser.cpp
+    mymkdir/Settings/Settings.h
+    mymkdir/Settings/Settings.cpp
+    mymkdir/Tokens/Tokens.h
+    mymkdir/Tokens/Tokens.cpp
+    mymkdir/main.cpp
+)
+add_executable(
+    mymv
+    mymv/Action/Action.h
+    mymv/Action/Action.cpp
+    mymv/Parser/Parser.h
+    mymv/Parser/Parser.cpp
+    mymv/Settings/Settings.h
+    mymv/Settings/Settings.cpp
+    mymv/Tokens/Tokens.h
+    mymv/Tokens/Tokens.cpp
+    mymv/main.cpp
+)
+add_executable(
+    myrm
+    myrm/Action/Action.h
+    myrm/Action/Action.cpp
+    myrm/Parser/Parser.h
+    myrm/Parser/Parser.cpp
+    myrm/Settings/Settings.h
+    myrm/Settings/Settings.cpp
+    myrm/Tokens/Tokens.h
+    myrm/Tokens/Tokens.cpp
+    myrm/main.cpp
+)
+add_executable(
+    myshell
+    myshell/Common/common.cpp
+    myshell/Common/Common.h
+    myshell/Common/error_codes.cpp
+    myshell/ExternalCommand/execute.cpp
+    myshell/ExternalCommand/external_command.cpp
+    myshell/ExternalCommand/ExternalCommand.h
+    myshell/ExternalCommand/get_base_name.cpp
+    myshell/ExternalCommand/get_dir_name.cpp
+    myshell/ExternalCommand/get_real_path.cpp
+    myshell/ExternalCommand/is_directory.cpp
+    myshell/ExternalCommand/is_executable.cpp
+    myshell/ExternalCommand/is_file.cpp
+    myshell/ExternalCommand/retrieve.cpp
+    myshell/ExternalCommand/seek.cpp
+    myshell/InternalCommand/help.cpp
+    myshell/InternalCommand/InternalCommand.h
+    myshell/InternalCommand/run_mcd.cpp
+    myshell/InternalCommand/run_merrno.cpp
+    myshell/InternalCommand/run_mexit.cpp
+    myshell/InternalCommand/run_mpwd.cpp
+    myshell/InternalCommand/seek_for_help_token.cpp
+    myshell/Parse/basic_parser.cpp
+    myshell/Parse/internal_command_parser.cpp
+    myshell/Parse/parse.cpp
+    myshell/Parse/Parse.h
+    myshell/Parse/raw_parser.cpp
+    myshell/Parse/test_stream.cpp
+    myshell/Tokens/Tokens.h
+    myshell/Tokens/tokens.cpp
+    myshell/Wildcard/is_wildcard.cpp
+    myshell/Wildcard/wildcard_transformer.cpp
+    myshell/Wildcard/wildcard.cpp
+    myshell/Wildcard/Wildcard.h
+    myshell/main.cpp
+)
