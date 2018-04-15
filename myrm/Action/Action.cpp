@@ -38,6 +38,9 @@ bool myrm::clearDirectory(string dirName){
         }
 
         string current_name = namelist[n]->d_name;
+        
+        free(namelist[n]);
+
         if(current_name == ".." || current_name == ".")
             continue;
         current_name = dirName + "/" + current_name;
@@ -45,8 +48,6 @@ bool myrm::clearDirectory(string dirName){
         struct stat buffer;
         if(stat(current_name.c_str(), &buffer) != 0)
             wasFailure = true;
-        
-        free(namelist[n]);
 
         if(wasFailure)
             continue;

@@ -72,6 +72,18 @@ add_executable(
     myrm/main.cpp
 )
 add_executable(
+    mycp
+    mycp/Action/Action.h
+    mycp/Action/Action.cpp
+    mycp/Parser/Parser.h
+    mycp/Parser/Parser.cpp
+    mycp/Settings/Settings.h
+    mycp/Settings/Settings.cpp
+    mycp/Tokens/Tokens.h
+    mycp/Tokens/Tokens.cpp
+    mycp/main.cpp
+)
+add_executable(
     myshell
     myshell/Common/common.cpp
     myshell/Common/Common.h
