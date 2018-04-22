@@ -2,14 +2,11 @@
 #define PARSE_H_
 
 #include <string>
-#include <sstream>
-#include <algorithm>
 
 #include "../File/File.h"
 #include "../Settings/Settings.h"
-#include "../Options/Options.h"
 
-namespace Parse{
+namespace myls{
     extern const char
         QUOTES, // "
         VALUE_DELIMITER, // =
@@ -31,14 +28,14 @@ namespace Parse{
         OptionsParser
         (
             char **argv,
-            Settings::SettingsHolder &settingsHolder,
-            File::FilesSorter &filesSorter
+            SettingsHolder &settingsHolder,
+            FilesSorter &filesSorter
         );
         void parse();
     private:
         BasicParser basicParser;
-        Settings::SettingsHolder &settingsHolder;
-        File::FilesSorter &filesSorter;
+        SettingsHolder &settingsHolder;
+        FilesSorter &filesSorter;
     };
 }
 

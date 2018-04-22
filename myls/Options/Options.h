@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Options{
+namespace myls{
     extern const std::string
         HELP_SHORT, // -h
         HELP_LONG, // --help

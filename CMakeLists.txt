@@ -9,30 +9,20 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 add_executable(mycat mycat/main.cpp)
 add_executable(
     myls
-    myls/Display/display.cpp
     myls/Display/Display.h
-    myls/Display/displayer.cpp
-    myls/Display/get_files.cpp
-    myls/Display/out_directory.cpp
-    myls/Display/out_single_directory.cpp
-    myls/Display/out_single_file.cpp
-    myls/Display/run.cpp
-    myls/File/file_instance.cpp
+    myls/Display/Display.cpp
     myls/File/File.h
-    myls/File/files_sorter.cpp
-    myls/General/general.cpp
+    myls/File/File.cpp
     myls/General/General.h
-    myls/General/get_date_representation.cpp
-    myls/Options/options.cpp
+    myls/General/General.cpp
     myls/Options/Options.h
-    myls/Parse/basic_parser.cpp
-    myls/Parse/options_parser.cpp
-    myls/Parse/parse.cpp
+    myls/Options/Options.cpp
     myls/Parse/Parse.h
-    myls/Settings/settings_holder.cpp
+    myls/Parse/Parse.cpp
     myls/Settings/Settings.h
-    myls/SortingOptions/sorting_options.cpp
+    myls/Settings/Settings.cpp
     myls/SortingOptions/SortingOptions.h
+    myls/SortingOptions/SortingOptions.cpp
     myls/main.cpp
 )
 add_executable(

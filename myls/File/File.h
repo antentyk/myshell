@@ -2,20 +2,10 @@
 #define FILE_H_
 
 #include <string>
-#include <string.h>
-#include <vector>
 #include <map>
-#include <algorithm>
+#include <vector>
 
-#include <libgen.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include "../SortingOptions/SortingOptions.h"
-
-namespace File{
+namespace myls{
     class FileInstance{
     public:
         FileInstance& operator=(FileInstance other);

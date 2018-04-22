@@ -1,11 +1,36 @@
+#include <sstream>
+#include <algorithm>
+
+#include "../Options/Options.h"
 #include "Parse.h"
 
-using namespace Parse;
+using namespace myls;
+using std::string;
+
+const char
+    myls::QUOTES = '\"',
+    myls::VALUE_DELIMITER = '=',
+    myls::OPTION_INDICATOR = '-';
+
+const string
+    myls::FILE_NAME_INDICATOR = "--";
+
+BasicParser::BasicParser(char **argv):
+    argv(argv){}
+
+bool BasicParser::parse(std::string *target){
+    if(*(argv) == NULL)return false;
+
+    *target = string(*argv);
+    ++argv;
+
+    return true;
+}
 
 OptionsParser::OptionsParser(
     char **argv,
-    Settings::SettingsHolder &settingsHolder,
-    File::FilesSorter &filesSorter
+    SettingsHolder &settingsHolder,
+    FilesSorter &filesSorter
 ):
     basicParser(BasicParser{argv}),
     settingsHolder(settingsHolder),
@@ -48,10 +73,10 @@ void OptionsParser::parse(){
         
         if
         (
-            current_option.size() > Options::SORT.size() &&
-            current_option.substr(0, Options::SORT.size() + 1) == Options::SORT + VALUE_DELIMITER
+            current_option.size() > SORT.size() &&
+            current_option.substr(0, SORT.size() + 1) == SORT + VALUE_DELIMITER
         )
-            for(size_t i = Options::SORT.size() + 1; i < current_option.size(); i++){
+            for(size_t i = SORT.size() + 1; i < current_option.size(); i++){
                 std::string sub_option = current_option.substr(i, 1);
                 if
                 (

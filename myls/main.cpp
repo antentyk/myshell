@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdlib>
-#include <ostream>
 
 #include "Display/Display.h"
 #include "Parse/Parse.h"
@@ -8,21 +7,23 @@
 #include "Display/Display.h"
 #include "General/General.h"
 
+using namespace myls;
+
 int main(int argc, char** argv){
     ++argv;
 
-    Settings::SettingsHolder settingsHolder;
+    SettingsHolder settingsHolder;
 
-    File::FilesSorter filesSorter;
+    FilesSorter filesSorter;
 
-    Parse::OptionsParser parser(
+    OptionsParser parser(
         argv,
         settingsHolder,
         filesSorter
     );
     parser.parse();
     if(settingsHolder.IS_HELP){
-        General::display_help(std::cout);
+        display_help(std::cout);
         exit(EXIT_SUCCESS);
     }
     if(settingsHolder.IS_INVALID_OPTION){
@@ -30,13 +31,11 @@ int main(int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    Display::Displayer displayer(
+    Displayer displayer(
         std::cout,
         settingsHolder,
         filesSorter
     );
 
-    displayer.run();
-
-    exit(EXIT_SUCCESS);
+    return displayer.run();
 }

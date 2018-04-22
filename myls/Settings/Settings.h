@@ -5,10 +5,7 @@
 #include <vector>
 #include <map>
 
-#include "../Options/Options.h"
-#include "../SortingOptions/SortingOptions.h"
-
-namespace Settings{
+namespace myls{
     class SettingsHolder{
     public:
         SettingsHolder();

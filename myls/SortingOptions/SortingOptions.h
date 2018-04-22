@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace SortingOptions{
+namespace myls{
     extern const std::string
         UNSORTED, // U
         SIZE, // S
