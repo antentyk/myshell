@@ -33,6 +33,7 @@ int main(int argc, char** argv){
 
     Displayer displayer(
         std::cout,
+        std::cerr,
         settingsHolder,
         filesSorter
     );

@@ -22,10 +22,12 @@ const string
 Displayer::Displayer
 (
     ostream &output,
+    ostream &err_output,
     const SettingsHolder &settingsHolder,
     const FilesSorter &filesSorter
 ):
     output(output),
+    err_output(err_output),
     settingsHolder(settingsHolder),
     filesSorter(filesSorter)
 {}
@@ -159,7 +161,7 @@ int Displayer::run(){
             files.push_back(current);
         else
         {
-            output << "No such a file: " << it << endl;
+            err_output << "No such a file: " << it << endl;
             wasFail = true;
         }
     }

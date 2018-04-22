@@ -13,6 +13,7 @@ namespace myls{
         Displayer
         (
             std::ostream &output,
+            std::ostream &err_output,
             const SettingsHolder &settingsHolder,
             const FilesSorter &filesSorter
         );
@@ -24,7 +25,9 @@ namespace myls{
 
         void out_directory(FileInstance directory, bool is_name);
         
-        std::ostream &output;
+        std::ostream
+            &output,
+            &err_output;
         const SettingsHolder &settingsHolder;
         const FilesSorter &filesSorter;
     };
