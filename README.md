@@ -3,6 +3,22 @@ myshell with additional coreutils
 
 description will evolve soon
 
+[<h2>myshell</h2>](myshell)
+<p>
+  Similar to windows or ubuntu <b>terminal</b><br />
+  Supports <b>built-in</b> commands and execution of <b>external</b> programs<br />
+  
+  <ul>
+  Built-in commands:
+  <li><b>merrno [-h|--help]</b> displays exit code of the last command (if no commands were executed, prints 0)</li>
+  <li><b>mpwd [-h|--help]</b> outputs name of the current directory</li>
+  <li><b>mcd &lt;path&gt; [-h|--help]</b> navigates to the given directory</li>
+  <li><b>mexit &lt;exit code&gt; [-h|--help]</b> exits with given exit code (if no exit code is provided, exits with 0 code)</li>
+  </ul>
+  
+  Every other command is considered external and is executed using fork-exec
+</p>
+
 [<h2>myls</h2>](myls)
 <p>
   Prints information about files or directories<br />
