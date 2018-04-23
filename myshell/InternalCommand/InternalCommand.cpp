@@ -89,7 +89,7 @@ void myshell::run_mcd(
     
     if(seek_for_help_token(options)){
         ::MERRNO = SUCCESS;
-        return display_help_merrno();
+        return display_help_mcd();
     }
 
     if(options.size() == 0)
