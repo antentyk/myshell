@@ -2,14 +2,13 @@
 #define INTERNAL_COMMAND_H_
 
 #include <string>
+#include <set>
+#include <sstream>
+
 #include <limits.h>
 #include <unistd.h>
 
-#include "../Common/Common.h"
-#include "../Parse/Parse.h"
-#include "../Tokens/Tokens.h"
-
-namespace InternalCommand{
+namespace myshell{
     extern const int
         MERRNO_FAIL,
         MPWD_FAIL,

@@ -2,9 +2,6 @@
 #define COMMON_H_
 
 #include <string>
-#include <iostream>
-#include <limits.h>
-#include <unistd.h>
 
 extern int
     MERRNO;

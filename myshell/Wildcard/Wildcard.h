@@ -1,13 +1,11 @@
 #ifndef WILDCARD_H_
 #define WILDCARD_H_
 
-#include <iostream>
 #include <string>
-#include <sstream>
 #include <regex>
 #include <set>
 
-namespace Wildcard{
+namespace myshell{
     extern const
         std::set<char> WILDCARD_INDICATORS;
 

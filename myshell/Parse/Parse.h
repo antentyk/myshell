@@ -1,14 +1,13 @@
 #ifndef PARSE_H_
 #define PARSE_H_
 
-
 #include <string>
 #include <sstream>
 #include <set>
 
 #include "../Common/Common.h"
 
-namespace Parse{
+namespace myshell{
     extern const char
         RAW_DELIMITER,
         WHITESPACE_DELIMITER;

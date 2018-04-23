@@ -1,23 +1,11 @@
 #ifndef EXTERNALCOMMAND_H_
 #define EXTERNALCOMMAND_H_
 
-#include <sstream>
 #include <string>
-#include <string.h>
-#include <libgen.h>
-#include <dirent.h>
 #include <vector>
-#include <limits.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sys/types.h>  
-#include <sys/wait.h>
+#include <sstream>
 
-#include "../Parse/Parse.h"
-#include "../Wildcard/Wildcard.h"
-
-namespace ExternalCommand{
+namespace myshell{
     extern const int
         EXTERNAL_EXEC_FAIL,
         EXTERNAL_WILDCARD_FAIL,

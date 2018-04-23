@@ -2,9 +2,8 @@
 #define TOKENS_H_
 
 #include <string>
-#include <string.h>
 
-namespace Tokens{
+namespace myshell{
     extern const std::string
         MERRNO,
         MPWD,

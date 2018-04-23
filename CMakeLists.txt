@@ -75,38 +75,17 @@ add_executable(
 )
 add_executable(
     myshell
-    myshell/Common/common.cpp
     myshell/Common/Common.h
-    myshell/Common/error_codes.cpp
-    myshell/ExternalCommand/execute.cpp
-    myshell/ExternalCommand/external_command.cpp
+    myshell/Common/Common.cpp
     myshell/ExternalCommand/ExternalCommand.h
-    myshell/ExternalCommand/get_base_name.cpp
-    myshell/ExternalCommand/get_dir_name.cpp
-    myshell/ExternalCommand/get_real_path.cpp
-    myshell/ExternalCommand/is_directory.cpp
-    myshell/ExternalCommand/is_executable.cpp
-    myshell/ExternalCommand/is_file.cpp
-    myshell/ExternalCommand/retrieve.cpp
-    myshell/ExternalCommand/seek.cpp
-    myshell/InternalCommand/help.cpp
+    myshell/ExternalCommand/ExternalCommand.cpp
     myshell/InternalCommand/InternalCommand.h
-    myshell/InternalCommand/run_mcd.cpp
-    myshell/InternalCommand/run_merrno.cpp
-    myshell/InternalCommand/run_mexit.cpp
-    myshell/InternalCommand/run_mpwd.cpp
-    myshell/InternalCommand/seek_for_help_token.cpp
-    myshell/Parse/basic_parser.cpp
-    myshell/Parse/internal_command_parser.cpp
-    myshell/Parse/parse.cpp
+    myshell/InternalCommand/InternalCommand.cpp
     myshell/Parse/Parse.h
-    myshell/Parse/raw_parser.cpp
-    myshell/Parse/test_stream.cpp
+    myshell/Parse/Parse.cpp
     myshell/Tokens/Tokens.h
-    myshell/Tokens/tokens.cpp
-    myshell/Wildcard/is_wildcard.cpp
-    myshell/Wildcard/wildcard_transformer.cpp
-    myshell/Wildcard/wildcard.cpp
+    myshell/Tokens/Tokens.cpp
     myshell/Wildcard/Wildcard.h
+    myshell/Wildcard/Wildcard.cpp
     myshell/main.cpp
 )

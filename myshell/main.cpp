@@ -3,47 +3,55 @@
 #include <sstream>
 #include <limits.h>
 #include <unistd.h>
+#include <iostream>
 
 #include "ExternalCommand/ExternalCommand.h"
 #include "InternalCommand/InternalCommand.h"
 #include "Tokens/Tokens.h"
+#include "Common/Common.h"
 
 using namespace std;
+using namespace myshell;
+using std::string;
+using std::cout;
+using std::cin;
+using std::endl;
 
-std::string get_current_path(){
-    static char BUFFER[PATH_MAX];
+
+string get_current_path(){
+    char BUFFER[PATH_MAX];
     char *result = getcwd(BUFFER, PATH_MAX);
     if(result == NULL){
         mfail("Error while getting current path", EXIT_FAILURE);
         exit(EXIT_FAILURE);
     }
 
-    return std::string(result);
+    return string(result);
 }
 
 void execute(){
-    std::cout << get_current_path() << " $ ";
+    cout << get_current_path() << " $ ";
 
-    std::string line;
-    getline(std::cin, line);
+    string line;
+    getline(cin, line);
 
-    std::stringstream strm(line);
+    stringstream strm(line);
 
-    std::string command_name;
+    string command_name;
     strm >> std::skipws;
     strm >> command_name;
 
-    if(strcmp(command_name.c_str(), Tokens::MERRNO.c_str()) == 0)
-        return InternalCommand::run_merrno(strm);
-    if(strcmp(command_name.c_str(), Tokens::MEXIT.c_str()) == 0)
-        return InternalCommand::run_mexit(strm);
-    if(strcmp(command_name.c_str(), Tokens::MPWD.c_str()) == 0)
-        return InternalCommand::run_mpwd(strm);
-    if(strcmp(command_name.c_str(), Tokens::MCD.c_str()) == 0)
-        return InternalCommand::run_mcd(strm);
+    if(strcmp(command_name.c_str(), myshell::MERRNO.c_str()) == 0)
+        return run_merrno(strm);
+    if(strcmp(command_name.c_str(), MEXIT.c_str()) == 0)
+        return run_mexit(strm);
+    if(strcmp(command_name.c_str(), MPWD.c_str()) == 0)
+        return run_mpwd(strm);
+    if(strcmp(command_name.c_str(), MCD.c_str()) == 0)
+        return run_mcd(strm);
     
     strm.seekg(0, std::ios::beg);
-    return ExternalCommand::execute(strm);
+    return execute(strm);
 }
 
 int main(){
