@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/types.h>  
 #include <sys/wait.h>
+#include <boost/algorithm/string.hpp>
 
 #include "../Parse/Parse.h"
 #include "../Wildcard/Wildcard.h"
@@ -22,7 +23,7 @@ const std::string
     myshell::CURRENT_PATH = ".",
     myshell::PREVIOUS_PATH = "..";
 
-void myshell::execute(stringstream &strm){
+void myshell::executeExternal(stringstream &strm){
     string command_name;
     vector<string> options;
 
@@ -34,10 +35,19 @@ void myshell::execute(stringstream &strm){
 
     vector<string> executables;
 
+    vector<string> pathFolders;
+    string pathStr = getenv("PATH");
+    boost::split(pathFolders, pathStr, boost::is_any_of(":"));
+
     if(dir_name[0] != command_name[0])
         // need to seek in start folder
         seek(INITIAL_PATH, base_name, executables, true);
 
+    // searching in path folders
+    for(auto &folder: pathFolders)
+        seek(folder + "/" + dir_name, base_name, executables, false);
+
+    // searching in current folder
     seek(dir_name, base_name, executables, false);
 
     for(size_t i = 0; i < executables.size(); i++)
@@ -152,6 +162,12 @@ bool myshell::retrieve(
 )
 {
     strm >> std::skipws;
+
+    char tmp; strm >> tmp;
+    if(tmp == COMMENT_INDICATOR)
+        return false;
+    
+    strm.putback(tmp);
     strm >> *(command_name);
 
     char current;
@@ -163,6 +179,13 @@ bool myshell::retrieve(
 
     while(strm >> current){
         strm.putback(current);
+
+        if(current == COMMENT_INDICATOR)
+        {
+            while(strm >> current);
+            break;
+        }
+
         string current_option;
 
         if(current == RAW_DELIMITER){
@@ -179,7 +202,7 @@ bool myshell::retrieve(
         }
         else{
             current_option = basic.parse();
-            if(MERRNO != SUCCESS)
+            if(MERRNO != SUCCESS || current_option.front() == COMMENT_INDICATOR)
                 return false;
         }
 

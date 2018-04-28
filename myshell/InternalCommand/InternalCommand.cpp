@@ -1,4 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "../Common/Common.h"
 #include "../Parse/Parse.h"
@@ -13,6 +17,7 @@ using std::stringstream;
 using std::string;
 using std::multiset;
 using std::set;
+using std::ifstream;
 
 void myshell::display_help_tokens(){
     cout << "[";
@@ -33,6 +38,15 @@ void myshell::display_help_merrno(){
 
     cout << "If no commands were executed, displays ";
     cout << SUCCESS << endl;
+}
+
+void myshell::display_help_script(){
+    cout << MSCRIPT << " ";
+
+    display_help_tokens();
+    cout << "<path to script>" << endl;
+
+    cout << "Runs script in current window" << endl;
 }
 
 void myshell::display_help_mpwd(){
@@ -222,6 +236,49 @@ void myshell::run_mpwd(
         );
     
     cout << result << endl;
+}
+
+void myshell::run_script(stringstream &strm)
+{
+    multiset<string> options;
+
+    InternalCommandParser parser(
+        strm,
+        options
+    );
+
+    while(test_stream(strm))
+        if(!parser.parse())
+            return;
+    
+    if(seek_for_help_token(options))
+    {
+        ::MERRNO = SUCCESS;
+        return display_help_script();
+    }
+
+    if(options.size() != 1)
+        return mfail("Invalid number of arguments", SCRIPT_FAIL);
+
+    string scriptName = *options.begin();
+
+    struct stat buffer;
+    if(stat(scriptName.c_str(), &buffer) == -1)
+        return mfail("Cannot find script file", SCRIPT_FAIL);
+    if(!S_ISREG(buffer.st_mode))
+        return mfail("Script must be regular file", SCRIPT_FAIL);
+
+    ifstream scriptFile;
+    scriptFile.open(scriptName);
+
+    if(!scriptFile.is_open())
+        return mfail("Cannot open script file", SCRIPT_FAIL);
+    
+    ::MERRNO = SUCCESS;
+
+    string line;
+    while(getline(scriptFile, line))
+        execute(line);
 }
 
 bool myshell::seek_for_help_token(multiset<string> &target){

@@ -1,9 +1,10 @@
 #include <string>
 #include <string.h>
-#include <sstream>
 #include <limits.h>
 #include <unistd.h>
 #include <iostream>
+
+#include <cstdlib>
 
 #include "ExternalCommand/ExternalCommand.h"
 #include "InternalCommand/InternalCommand.h"
@@ -17,7 +18,6 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-
 string get_current_path(){
     char BUFFER[PATH_MAX];
     char *result = getcwd(BUFFER, PATH_MAX);
@@ -29,33 +29,16 @@ string get_current_path(){
     return string(result);
 }
 
-void execute(){
-    cout << get_current_path() << " $ ";
+int main(int argc, char ** argv){
+    if(argc > 1)
+        return externalScript(argc, argv);
 
-    string line;
-    getline(cin, line);
-
-    stringstream strm(line);
-
-    string command_name;
-    strm >> std::skipws;
-    strm >> command_name;
-
-    if(strcmp(command_name.c_str(), myshell::MERRNO.c_str()) == 0)
-        return run_merrno(strm);
-    if(strcmp(command_name.c_str(), MEXIT.c_str()) == 0)
-        return run_mexit(strm);
-    if(strcmp(command_name.c_str(), MPWD.c_str()) == 0)
-        return run_mpwd(strm);
-    if(strcmp(command_name.c_str(), MCD.c_str()) == 0)
-        return run_mcd(strm);
-    
-    strm.seekg(0, std::ios::beg);
-    return execute(strm);
-}
-
-int main(){
     while(true)
-        execute();
+    {
+        cout << "\033[1;31m" << get_current_path() << "$ " << "\033[0m";
+        string line;
+        getline(cin, line);
+        execute(line);
+    }
     return 0;
 }

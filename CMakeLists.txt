@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
+FIND_PACKAGE( Boost REQUIRED )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
 add_executable(mycat mycat/main.cpp)
 add_executable(
     myls
@@ -89,3 +92,5 @@ add_executable(
     myshell/Wildcard/Wildcard.cpp
     myshell/main.cpp
 )
+
+TARGET_LINK_LIBRARIES( myshell LINK_PUBLIC ${Boost_LIBRARIES} )

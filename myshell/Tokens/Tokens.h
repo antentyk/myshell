@@ -8,7 +8,8 @@ namespace myshell{
         MERRNO,
         MPWD,
         MCD,
-        MEXIT;
+        MEXIT,
+        MSCRIPT;
     
     extern const std::string
         HELP_SHORT,

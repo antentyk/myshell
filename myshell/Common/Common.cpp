@@ -1,20 +1,24 @@
 #include <iostream>
 #include <limits.h>
 #include <unistd.h>
+#include <sstream>
 
 #include "../Parse/Parse.h"
 #include "../ExternalCommand/ExternalCommand.h"
 #include "../InternalCommand/InternalCommand.h"
+#include "../Tokens/Tokens.h"
 
 #include "Common.h"
 
 using std::string;
+using std::stringstream;
 using std::cerr;
 using std::endl;
+using namespace myshell;
 
 void mfail(string message, int exit_code){
     cerr << message << endl;
-    MERRNO = exit_code;
+    ::MERRNO = exit_code;
 }
 
 namespace
@@ -44,6 +48,45 @@ const int
     myshell::MERRNO_FAIL = 6,
     myshell::MPWD_FAIL = 7,
     myshell::MCD_FAIL = 8,
-    myshell::MEXIT_FAIL = 9;
+    myshell::MEXIT_FAIL = 9,
+    myshell::SCRIPT_FAIL = 10;
 
 int MERRNO = SUCCESS;
+
+void execute(string line){
+    stringstream strm(line);
+
+    string command_name;
+    strm >> std::skipws;
+    strm >> command_name;
+
+    if(command_name == myshell::MERRNO)
+        return run_merrno(strm);
+    if(command_name == MEXIT)
+        return run_mexit(strm);
+    if(command_name == MPWD)
+        return run_mpwd(strm);
+    if(command_name == MCD)
+        return run_mcd(strm);
+    if(command_name == MSCRIPT)
+        return run_script(strm);
+    
+    strm.seekg(0, std::ios::beg);
+    return executeExternal(strm);
+}
+
+int externalScript(int argc, char ** argv)
+{
+    if(argc != 2)
+    {
+        mfail("Invalid number of arguments", SCRIPT_FAIL);
+        return ::MERRNO;
+    }
+
+    string scriptName{argv[1]};
+    stringstream strm{scriptName};
+
+    run_script(strm);
+
+    return ::MERRNO;
+}

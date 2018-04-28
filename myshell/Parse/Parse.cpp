@@ -12,7 +12,8 @@ const char
     myshell::WHITESPACE_DELIMITER = '\"';
 
 const char
-    myshell::ESCAPE_CHARACTER_INDICATOR = '\\';
+    myshell::ESCAPE_CHARACTER_INDICATOR = '\\',
+    myshell::COMMENT_INDICATOR = '#';
 
 RawParser::RawParser(stringstream &strm):
     strm(strm){}
@@ -76,15 +77,30 @@ bool InternalCommandParser::parse(){
     MERRNO = SUCCESS;
     
     strm >> skipws;
-    char current;
-    strm >> current; strm.putback(current);
+    char current; strm >> current;
+    if(current == COMMENT_INDICATOR)
+    {
+        while(strm >> current);
+        return true;
+    }
+
+    strm.putback(current);
 
     if(current == RAW_DELIMITER)
         options.insert(raw.parse(RAW_DELIMITER));
     else if(current == WHITESPACE_DELIMITER)
         options.insert(raw.parse(WHITESPACE_DELIMITER));
     else
-        options.insert(basic.parse());
+    {
+        string currentOption = basic.parse();
+        if(currentOption.front() == COMMENT_INDICATOR)
+        {
+            while(strm >> current);
+            return true;
+        }
+        
+        options.insert(currentOption);
+    }
     
     return MERRNO == SUCCESS;
 }

@@ -12,7 +12,8 @@ namespace myshell{
         RAW_DELIMITER,
         WHITESPACE_DELIMITER;
     extern const char
-        ESCAPE_CHARACTER_INDICATOR;
+        ESCAPE_CHARACTER_INDICATOR,
+        COMMENT_INDICATOR;
     
     extern const int
         PARSE_TOKENS_FAIL;

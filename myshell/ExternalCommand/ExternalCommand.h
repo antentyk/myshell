@@ -16,11 +16,6 @@ namespace myshell{
         CURRENT_PATH,
         PREVIOUS_PATH;
 
-    void execute(
-        std::string command_name,
-        std::vector<std::string> options
-    );
-
     std::string get_base_name(std::string path);
     std::string get_dir_name(std::string path);
     std::string get_real_path(std::string relative_path);
@@ -34,7 +29,7 @@ namespace myshell{
         std::vector<std::string> &options
     );
 
-    void execute(std::stringstream &strm);
+    void executeExternal(std::stringstream &strm);
     void seek(
         std::string folder_name,
         std::string &needed_name,
