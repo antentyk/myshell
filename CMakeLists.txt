@@ -90,6 +90,8 @@ add_executable(
     myshell/Tokens/Tokens.cpp
     myshell/Wildcard/Wildcard.h
     myshell/Wildcard/Wildcard.cpp
+    myshell/Environ/Environ.h
+    myshell/Environ/Environ.cpp
     myshell/main.cpp
 )
 

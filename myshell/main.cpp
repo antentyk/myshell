@@ -29,7 +29,7 @@ string get_current_path(){
     return string(result);
 }
 
-int main(int argc, char ** argv){
+int main(int argc, char ** argv, char ** envp){
     if(argc > 1)
         return externalScript(argc, argv);
 

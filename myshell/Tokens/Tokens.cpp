@@ -8,7 +8,9 @@ const string
     myshell::MPWD = "mpwd",
     myshell::MCD = "mcd",
     myshell::MEXIT = "mexit",
-    myshell::MSCRIPT = "."; 
+    myshell::MSCRIPT = ".", 
+    myshell::MEXPORT = "mexport",
+    myshell::MECHO = "mecho";
 
 const string
     myshell::HELP_SHORT = "-h",

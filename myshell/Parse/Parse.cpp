@@ -1,4 +1,8 @@
+#include <boost/algorithm/string.hpp>
+#include <vector>
+
 #include "Parse.h"
+#include "../Environ/Environ.h"
 
 using namespace myshell;
 using std::stringstream;
@@ -6,6 +10,7 @@ using std::string;
 using std::noskipws;
 using std::skipws;
 using std::multiset;
+using std::vector;
 
 const char
     myshell::RAW_DELIMITER = '\'',
@@ -86,22 +91,27 @@ bool InternalCommandParser::parse(){
 
     strm.putback(current);
 
+    string currentOption;
+
     if(current == RAW_DELIMITER)
-        options.insert(raw.parse(RAW_DELIMITER));
+        currentOption = raw.parse(RAW_DELIMITER);
     else if(current == WHITESPACE_DELIMITER)
-        options.insert(raw.parse(WHITESPACE_DELIMITER));
+        currentOption = raw.parse(WHITESPACE_DELIMITER);
     else
     {
-        string currentOption = basic.parse();
+        currentOption = basic.parse();
         if(currentOption.front() == COMMENT_INDICATOR)
         {
             while(strm >> current);
             return true;
         }
-        
-        options.insert(currentOption);
     }
     
+    if(current != RAW_DELIMITER)
+        replaceEnvironmentVariables(currentOption);
+
+    options.insert(currentOption);
+
     return MERRNO == SUCCESS;
 }
 
@@ -115,4 +125,26 @@ bool myshell::test_stream(stringstream &strm){
         
     strm.putback(current);
     return true;
+}
+
+void myshell::replaceEnvironmentVariables(string &target)
+{
+    target.push_back(' ');
+
+    for(char ** envp = environ; *envp; ++envp)
+    {
+        string varAndValue{*envp};
+        vector<string> tmp;
+
+        boost::algorithm::split(tmp, varAndValue, boost::is_any_of(string(1, EQUALITY_SIGN)));
+
+        string
+            varName{tmp.front()},
+            varValue{tmp.back()};
+        
+        boost::replace_all(target, "$" + varName + " ", varValue + " ");
+    }
+
+    if(target.back() == ' ')
+        target.pop_back();
 }

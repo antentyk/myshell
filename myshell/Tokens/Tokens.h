@@ -9,7 +9,9 @@ namespace myshell{
         MPWD,
         MCD,
         MEXIT,
-        MSCRIPT;
+        MSCRIPT,
+        MEXPORT,
+        MECHO;
     
     extern const std::string
         HELP_SHORT,

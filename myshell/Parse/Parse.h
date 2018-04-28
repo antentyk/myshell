@@ -49,6 +49,8 @@ namespace myshell{
     };
 
     bool test_stream(std::stringstream &strm);
+
+    void replaceEnvironmentVariables(std::string &target);
 }
 
 #endif

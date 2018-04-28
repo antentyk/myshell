@@ -11,6 +11,7 @@
 
 #include "../Parse/Parse.h"
 #include "../Wildcard/Wildcard.h"
+#include "../Environ/Environ.h"
 
 #include "ExternalCommand.h"
 
@@ -77,6 +78,8 @@ void myshell::executeExternal(stringstream &strm){
         for(auto &it: options)
             arg_for_c.push_back(it.c_str());
         arg_for_c.push_back(nullptr);
+
+        setUpChildEnviron();
 
         execvp(
             executable_name.c_str(),
@@ -170,6 +173,8 @@ bool myshell::retrieve(
     strm.putback(tmp);
     strm >> *(command_name);
 
+    replaceEnvironmentVariables(*command_name);
+
     char current;
 
     BasicParser basic{strm};
@@ -205,6 +210,9 @@ bool myshell::retrieve(
             if(MERRNO != SUCCESS || current_option.front() == COMMENT_INDICATOR)
                 return false;
         }
+
+        if(current != RAW_DELIMITER)
+            replaceEnvironmentVariables(current_option);
 
         string dir_name = get_dir_name(current_option);
         string base_name = get_base_name(current_option);

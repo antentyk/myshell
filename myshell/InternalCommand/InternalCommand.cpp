@@ -3,10 +3,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
+#include <vector>
+#include <boost/algorithm/string.hpp>
 
 #include "../Common/Common.h"
 #include "../Parse/Parse.h"
 #include "../Tokens/Tokens.h"
+#include "../Environ/Environ.h"
 
 #include "InternalCommand.h"
 
@@ -18,6 +22,7 @@ using std::string;
 using std::multiset;
 using std::set;
 using std::ifstream;
+using std::vector;
 
 void myshell::display_help_tokens(){
     cout << "[";
@@ -299,4 +304,78 @@ bool myshell::seek_for_help_token(multiset<string> &target){
     }
     
     return is_help;
+}
+
+void myshell::run_mexport(stringstream &strm)
+{
+    ::MERRNO = SUCCESS;
+
+    multiset<string> options;
+
+    InternalCommandParser parser(strm, options);
+
+    while(test_stream(strm))
+        if(!parser.parse())
+            return;
+    
+    if(options.size() > 1)
+        return mfail("Invalid number of arguments", MEXPORT_FAIL);
+    
+    string content{*options.begin()};
+
+    string varName;
+
+    if(boost::contains(content, string(1, EQUALITY_SIGN)))
+    {
+        stringstream tmp{content};
+        run_variable(tmp);
+
+        varName = content.substr(0, content.find(EQUALITY_SIGN, 0));
+    }
+    else
+        varName = content;
+    
+    exportVar(varName);
+}
+
+void myshell::run_variable(stringstream &strm)
+{
+    ::MERRNO = SUCCESS;
+
+    string content{strm.str()};
+
+    if(!boost::contains(content, string(1, EQUALITY_SIGN)))
+        return mfail("Cannot find equality sign", ENVIRONMENT_FAIL);
+
+    size_t delimiterIndex = content.find(EQUALITY_SIGN);
+
+    string varName = content.substr(0, delimiterIndex);
+
+    stringstream valueStrm{content.substr(delimiterIndex + 1)};
+    multiset<string> valueOptions;
+    
+    InternalCommandParser parser(valueStrm, valueOptions);
+    while(test_stream(valueStrm))
+        if(!parser.parse())
+            return mfail("Error while parsing rhs value", ENVIRONMENT_FAIL);
+
+    if(valueOptions.size() != 1)
+        return mfail("Invalid number of arguments for rhs", ENVIRONMENT_FAIL);
+
+    setVar(varName, *valueOptions.begin());
+}
+
+void myshell::run_mecho(stringstream &strm)
+{
+    ::MERRNO = SUCCESS;
+
+    multiset<string> options;
+
+    InternalCommandParser parser(strm, options);
+
+    while(test_stream(strm) && parser.parse())
+    {
+        cout << *options.begin() << endl;
+        options.clear();
+    }
 }

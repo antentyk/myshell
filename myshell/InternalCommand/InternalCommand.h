@@ -14,7 +14,8 @@ namespace myshell{
         MPWD_FAIL,
         MCD_FAIL,
         MEXIT_FAIL,
-        SCRIPT_FAIL;
+        SCRIPT_FAIL,
+        MEXPORT_FAIL;
     
     void display_help_tokens();
     void display_help_merrno();
@@ -23,12 +24,17 @@ namespace myshell{
     void display_help_mexit();
     void display_help_script();
 
-
     void run_merrno(std::stringstream &strm);
     void run_mexit(std::stringstream &strm);
     void run_mpwd(std::stringstream &strm);
     void run_mcd(std::stringstream &strm);
     void run_script(std::stringstream &strm);
+
+    void run_mexport(std::stringstream &strm);
+    void run_variable(std::stringstream &strm);
+
+    void run_mecho(std::stringstream &strm);
+
     bool seek_for_help_token(std::multiset<std::string> &target);
 }
 
