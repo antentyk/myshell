@@ -4,12 +4,13 @@ project(myshell)
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -w")
 
 FIND_PACKAGE( Boost REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 add_executable(mycat mycat/main.cpp)
+add_executable(mygrep mygrep/main.cpp)
 add_executable(
     myls
     myls/Display/Display.h
@@ -96,3 +97,4 @@ add_executable(
 )
 
 TARGET_LINK_LIBRARIES( myshell LINK_PUBLIC ${Boost_LIBRARIES} )
+TARGET_LINK_LIBRARIES( mygrep LINK_PUBLIC ${Boost_LIBRARIES} )
