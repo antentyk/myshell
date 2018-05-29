@@ -26,7 +26,12 @@ namespace myshell{
     bool retrieve(
         std::stringstream &strm,
         std::string * command_name,
-        std::vector<std::string> &options
+        std::vector<std::string> &options,
+        std::string * input_redirection,
+        std::string * stdout_redirection,
+        std::string * cerr_redirection,
+        bool * same_stdout_and_cerr_redirection,
+        bool * background_running
     );
 
     void executeExternal(std::stringstream &strm);

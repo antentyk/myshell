@@ -15,7 +15,9 @@ namespace myshell{
         MCD_FAIL,
         MEXIT_FAIL,
         SCRIPT_FAIL,
-        MEXPORT_FAIL;
+        MEXPORT_FAIL,
+        REDIRECTION_FAIL,
+        PIPE_FAIL;
     
     void display_help_tokens();
     void display_help_merrno();

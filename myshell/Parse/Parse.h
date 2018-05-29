@@ -13,7 +13,8 @@ namespace myshell{
         WHITESPACE_DELIMITER;
     extern const char
         ESCAPE_CHARACTER_INDICATOR,
-        COMMENT_INDICATOR;
+        COMMENT_INDICATOR,
+        PIPE_INDICATOR;
     
     extern const int
         PARSE_TOKENS_FAIL;

@@ -1,6 +1,11 @@
 #include <iostream>
+#include <vector>
+#include <deque>
+#include <algorithm>
 #include <limits.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 
@@ -13,6 +18,8 @@
 #include "Common.h"
 
 using std::string;
+using std::vector;
+using std::deque;
 using std::stringstream;
 using std::cerr;
 using std::endl;
@@ -53,11 +60,16 @@ const int
     myshell::MEXIT_FAIL = 9,
     myshell::SCRIPT_FAIL = 10,
     myshell::ENVIRONMENT_FAIL = 11,
-    myshell::MEXPORT_FAIL = 12;
+    myshell::MEXPORT_FAIL = 12,
+    myshell::REDIRECTION_FAIL = 13,
+    myshell::PIPE_FAIL = 14;
 
 int MERRNO = SUCCESS;
 
 void execute(string line){
+    if(line.find(myshell::PIPE_INDICATOR) != std::string::npos)
+        return execute_pipe(line);
+
     stringstream strm(line);
 
     string command_name;
@@ -109,4 +121,85 @@ int externalScript(int argc, char ** argv)
     run_script(strm);
 
     return ::MERRNO;
+}
+
+namespace{
+    void perform_pipe(
+            deque<string> commands,
+            int terminal_STDIN,
+            int terminal_STDOUT,
+            int terminal_STDERR)
+    {
+        if(commands.size() == 1){
+            dup2(terminal_STDOUT, STDOUT_FILENO);
+            dup2(terminal_STDERR, STDERR_FILENO);
+
+            execute(commands.front());
+
+            dup2(terminal_STDIN, STDIN_FILENO);
+            return;
+        }
+
+        int pipe_fd[2];
+        pipe(pipe_fd);
+
+        int pipe_in = pipe_fd[0];
+        int pipe_out = pipe_fd[1];
+
+        string command = commands.front();
+        commands.pop_front();
+
+        pid_t pid = fork();
+        if(pid == -1){
+            dup2(terminal_STDERR, STDERR_FILENO);
+            return mfail("Error while fork", PIPE_FAIL);
+        }
+        if(pid > 0){
+            //parent
+            close(pipe_in);
+
+            dup2(pipe_out, STDOUT_FILENO);
+            dup2(pipe_out, STDERR_FILENO);
+
+            execute(command);
+
+            close(STDOUT_FILENO);
+            close(STDERR_FILENO);
+            close(pipe_out);
+
+            int child_exit_code;
+            waitpid(pid, &child_exit_code, 0);
+            ::MERRNO = child_exit_code;
+        }
+        else{
+            // child
+            close(pipe_out);
+
+            dup2(pipe_in, STDIN_FILENO);
+
+            close(pipe_in);
+
+            return perform_pipe(commands, terminal_STDIN, terminal_STDOUT, terminal_STDERR);
+        }
+    }
+}
+
+void execute_pipe(string line){
+    vector<string> commandsV;
+    boost::split(commandsV, line, boost::is_any_of(std::string(1, myshell::PIPE_INDICATOR)));
+    deque<string> commands;
+
+    std::copy(commandsV.begin(), commandsV.end(), std::back_inserter(commands));
+
+    int saved_STDIN = dup(STDIN_FILENO);
+    int saved_STDOUT = dup(STDOUT_FILENO);
+    int saved_STDERR = dup(STDERR_FILENO);
+
+    perform_pipe(commands, saved_STDIN, saved_STDOUT, saved_STDERR);
+
+    dup2(saved_STDIN, STDIN_FILENO);
+    dup2(saved_STDOUT, STDOUT_FILENO);
+    dup2(saved_STDERR, STDERR_FILENO);
+
+    return;
 }

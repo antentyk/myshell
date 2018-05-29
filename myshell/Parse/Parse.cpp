@@ -18,7 +18,8 @@ const char
 
 const char
     myshell::ESCAPE_CHARACTER_INDICATOR = '\\',
-    myshell::COMMENT_INDICATOR = '#';
+    myshell::COMMENT_INDICATOR = '#',
+    myshell::PIPE_INDICATOR = '|';
 
 RawParser::RawParser(stringstream &strm):
     strm(strm){}

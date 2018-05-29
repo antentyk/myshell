@@ -15,6 +15,8 @@ void mfail(std::string message, int exit_code);
 
 void execute(std::string line);
 
+void execute_pipe(std::string line);
+
 int externalScript(int argc, char ** argv);
 
 #endif

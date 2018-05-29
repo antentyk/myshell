@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>  
 #include <sys/wait.h>
@@ -14,6 +15,7 @@
 #include "../Environ/Environ.h"
 
 #include "ExternalCommand.h"
+#include "../InternalCommand/InternalCommand.h"
 
 using namespace myshell;
 using std::string;
@@ -28,7 +30,23 @@ void myshell::executeExternal(stringstream &strm){
     string command_name;
     vector<string> options;
 
-    if(!retrieve(strm, &command_name, options))
+    string input_redirection{""};
+    string stdout_redirection{"::initvalue::"};
+    string cerr_redirection{"::initvalue::"};
+    bool same_stdout_and_cerr_redirection = false;
+
+    bool background_running = false;
+
+    if(!retrieve(
+            strm,
+            &command_name,
+            options,
+            &input_redirection,
+            &stdout_redirection,
+            &cerr_redirection,
+            &same_stdout_and_cerr_redirection,
+            &background_running
+    ))
         return;
     
     string base_name = get_base_name(command_name);
@@ -68,7 +86,8 @@ void myshell::executeExternal(stringstream &strm){
         return mfail("Failed to fork", EXTERNAL_FORK_FAIL);
     if(pid > 0){
         int child_exit_code;
-        waitpid(pid, &child_exit_code, 0);
+        if(!background_running)
+            waitpid(pid, &child_exit_code, 0);
         MERRNO = child_exit_code;
     }
     else{
@@ -80,6 +99,61 @@ void myshell::executeExternal(stringstream &strm){
         arg_for_c.push_back(nullptr);
 
         setUpChildEnviron();
+
+        if(input_redirection != ""){
+            int fd = open(input_redirection.c_str(), O_RDONLY);
+            if(fd == -1)
+                return mfail("Cannot find input redirection file", myshell::REDIRECTION_FAIL);
+            if(close(STDIN_FILENO) == -1)
+                return mfail("Cannot close stdin file", myshell::REDIRECTION_FAIL);
+            if(dup(fd) == -1)
+                return mfail("Cannot duplicate input redirection file", myshell::REDIRECTION_FAIL);
+        }
+
+        if(stdout_redirection != "::initvalue::" || cerr_redirection != "::initvalue::"){
+            if(stdout_redirection != "::initvalue::" && stdout_redirection != ""){
+                int fd = open(stdout_redirection.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+                if(fd == -1)
+                    return mfail("Cannot open stdout redirection file", myshell::REDIRECTION_FAIL);
+                if(close(STDOUT_FILENO) == -1)
+                    return mfail("Cannot close stdout file", myshell::REDIRECTION_FAIL);
+                if(dup(fd) == -1)
+                    return mfail("Cannot duplicate stdout redirection file", myshell::REDIRECTION_FAIL);
+            }
+            if(cerr_redirection != "::initvalue::" && cerr_redirection != ""){
+                int fd = open(cerr_redirection.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+                if(fd == -1)
+                    return mfail("Cannot open cerr redirection file", myshell::REDIRECTION_FAIL);
+                if(close(STDERR_FILENO) == -1)
+                    return mfail("Cannot close cerr file", myshell::REDIRECTION_FAIL);
+                if(dup(fd) == -1)
+                    return mfail("Cannot duplicate cerr redirection file", myshell::REDIRECTION_FAIL);
+            }
+
+            if(same_stdout_and_cerr_redirection){
+                if(stdout_redirection == ""){
+                    if(close(STDOUT_FILENO) == -1)
+                        return mfail("Cannot close stdout file", myshell::REDIRECTION_FAIL);
+                    if(dup(STDERR_FILENO) == -1)
+                        return mfail("Cannot duplicate cerr file", myshell::REDIRECTION_FAIL);
+                }
+                if(cerr_redirection == ""){
+                    if(close(STDERR_FILENO) == -1)
+                        return mfail("Cannot close cerr file", myshell::REDIRECTION_FAIL);
+                    if(dup(STDOUT_FILENO) == -1)
+                        return mfail("Cannot duplicate stdout file", myshell::REDIRECTION_FAIL);
+                }
+            }
+        }
+
+        if(background_running){
+            if(close(STDOUT_FILENO) == -1)
+                return mfail("Cannot close stdout file", myshell::REDIRECTION_FAIL);
+            if(close(STDERR_FILENO) == -1)
+                return mfail("Cannot close cerr file", myshell::REDIRECTION_FAIL);
+            if(close(STDIN_FILENO) == -1)
+                return mfail("Cannot close stdin file", myshell::REDIRECTION_FAIL);
+        }
 
         execvp(
             executable_name.c_str(),
@@ -161,7 +235,12 @@ bool myshell::is_file(string file_name){
 bool myshell::retrieve(
     stringstream &strm,
     string * command_name,
-    vector<string> &options
+    vector<string> &options,
+    string * input_redirection,
+    string * stdout_redirection,
+    string * cerr_redirection,
+    bool * same_stdout_and_cerr_redirection,
+    bool * background_running
 )
 {
     strm >> std::skipws;
@@ -209,6 +288,45 @@ bool myshell::retrieve(
             current_option = basic.parse();
             if(MERRNO != SUCCESS || current_option.front() == COMMENT_INDICATOR)
                 return false;
+
+            if(current_option == "<"){
+                *input_redirection = basic.parse();
+
+                if(MERRNO != SUCCESS || input_redirection->front() == COMMENT_INDICATOR || (*input_redirection).empty()){
+                    mfail("Cannot find filename for input redirection", myshell::REDIRECTION_FAIL);
+                    return false;
+                }
+
+                continue;
+            }
+
+            if(current_option == "2>&1"){
+                *same_stdout_and_cerr_redirection = true;
+                *cerr_redirection = "";
+                continue;
+            }
+            if(current_option == "1>&2"){
+                *same_stdout_and_cerr_redirection = true;
+                *stdout_redirection = "";
+                continue;
+            }
+
+            if(current_option == ">" || current_option == "2>"){
+                string *inp = current_option == ">" ? stdout_redirection: cerr_redirection;
+                *inp = basic.parse();
+
+                if(MERRNO != SUCCESS || inp->front() == COMMENT_INDICATOR || (*inp).empty()){
+                    mfail("Cannot find filename for output redirection", myshell::REDIRECTION_FAIL);
+                    return false;
+                }
+
+                continue;
+            }
+
+            if(current_option == "&"){
+                *background_running = true;
+                continue;
+            }
         }
 
         if(current != RAW_DELIMITER)
